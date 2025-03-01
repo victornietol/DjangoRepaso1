@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm # Manejo de registro y autenticacion de usuarios
 from django.contrib.auth.models import User
-from django.contrib.auth import login, logout # Manejo de cookies para inicios de seison
+from django.contrib.auth import login, logout, authenticate # Manejo de cookies para inicios de seison
 from django.db import IntegrityError
 
 # Create your views here.
@@ -29,7 +29,6 @@ def signup(request):
                     password=request.POST['password1']
                 )
                 user.save() # Guardar el usuario en la BD
-                print("Se registro")
                 login(request, user) # Generar cookie de inicio de sesion con el usuario
                 return redirect("tasks")
 
@@ -45,7 +44,6 @@ def signup(request):
                 })
             
         else:
-            print("No se registro")
             return render(request, 'signup.html', {
                 'form': UserCreationForm,
                 'error': "Las contraseñas no conciden"
@@ -54,3 +52,26 @@ def signup(request):
 def cerrar_sesion(request):
     logout(request)
     return redirect('home')
+
+def iniciar_sesion(request):
+    if request.method == 'GET':
+        return render(request, 'login.html', {
+            'form': AuthenticationForm,
+            'error': None
+        })
+    else: 
+        # Autenticar usuario
+        user = authenticate(request,
+            username=request.POST['username'],
+            password=request.POST['password']
+        )
+        
+        if user is None: # Si no se devuelve objeto entonces no hay usuario
+            return render(request, 'login.html', {
+                'form': AuthenticationForm,
+                'error': "El usuario o la contraseña son incorrectos."
+            })
+        else: #  Se inicia sesion y se genera un cookie
+            login(request, user)
+            return redirect('tasks')
+        
