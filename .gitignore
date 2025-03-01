@@ -1,0 +1,14 @@
+# Ignorar entorno virtual
+venv/
+
+# Archivos innecesarios de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos de configuración de IDEs
+.vscode/
+.idea/
+
+# Configuración de Django
+.env
