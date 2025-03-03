@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm # Man
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate # Manejo de cookies para inicios de seison
 from django.db import IntegrityError
+from .forms import TaskForm
 
 # Create your views here.
 def home(request):
@@ -10,6 +11,35 @@ def home(request):
 
 def tasks(request):
     return render(request, 'tasks.html')
+
+def create_task(request):
+    # Verificar que se haya iniciado sesion con un usuario
+    if 'sessionid' not in request.COOKIES: # No se inicio sesion
+        return redirect('login')
+    else: # Si se inicio sesion
+        if request.method == 'GET':
+            # Solo se cargo la pagina
+            return render(request, 'create_task.html', {
+                'form':TaskForm
+            })
+        else:
+            # Se reciben los datos del formulario
+            try:
+                form = TaskForm(request.POST)
+                nueva_tarea = form.save(commit=False) # Obtener datos de la nueva tarea
+                nueva_tarea.user = request.user # Agregando usuario
+                nueva_tarea.save() # Guardar tarea
+                return redirect('tasks')
+            except ValueError:
+                return render(request, 'create_task.html', {
+                    'form':TaskForm,
+                    'mensaje': f"Error: Valor incorrecto introducido"
+                })
+            except Exception as e:
+                return render(request, 'create_task.html', {
+                    'form':TaskForm,
+                    'mensaje': f"Error: {e}"
+                })
 
 def signup(request):
     # Validar si es GET para mostrar la interfaz, o si es POST para recibir datos
@@ -74,4 +104,3 @@ def iniciar_sesion(request):
         else: #  Se inicia sesion y se genera un cookie
             login(request, user)
             return redirect('tasks')
-        

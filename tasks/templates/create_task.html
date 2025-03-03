@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Creacion de tareas{% endblock %}
+
+{% block content %}
+    <h1>Creacion de tareas</h1>
+
+    <form action="/tasks/create/" method="POST">
+        {% csrf_token %}
+
+        {% if mensaje %}
+            <h2>{{ mensaje }}</h2>
+        {% endif %}
+
+        {{ form.as_p }}
+
+        <button>
+            Guardar
+        </button>
+    </form>
+{% endblock %}
