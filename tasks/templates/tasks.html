@@ -5,6 +5,24 @@
 {% block content %}
     <h1>Pagina de tareas</h1>
 
+    <ul>
+        {% for task in tasks %}
+            <a href="{% url 'task_detail' task.id %}"> {# Se indica la url a visitar y el valor sig en este caso es el id de la tarea que se obtiene dinamicamente #}
+                <li>
+                    {% if task.importante %}
+                        <h2>🚨{{ task.titulo }}🚨</h2>
+                    {% else %}
+                        <h2>{{ task.titulo }}</h2>
+                    {% endif %}
+            </a>
+                    <p>Descripcion: {{ task.descripcion }}</p>
+                    <p>Usuario: {{ task.user.username }}</p>
+                </li>
+            
+
+        {% endfor %}
+    </ul>
+
     <a href="/tasks/create/">
         <button>Nueva Tarea</button>
     </a>

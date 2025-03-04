@@ -24,6 +24,7 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('tasks/', views.tasks, name='tasks'),
     path('tasks/create/', views.create_task, name='create_task'), # Esta ruta esta dentro de la ruta 'task'
+    path('tasks/<int:tarea_id>/', views.task_detail, name='task_detail'), # En este caso la ruta va a recibir un parametro dinamico
     path('logout/', views.cerrar_sesion, name='logout'),
     path('login/', views.iniciar_sesion, name='login'),
 ]
