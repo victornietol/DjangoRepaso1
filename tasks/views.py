@@ -46,10 +46,31 @@ def create_task(request):
                 })
 
 def task_detail(request, tarea_id):
-    tarea = get_object_or_404(Task, pk=tarea_id) # Obtener tarea
-    return render(request, 'task_detail.html', {
-        'tarea': tarea
-    })
+    if request.method == "GET":
+        tarea = get_object_or_404(Task, pk=tarea_id, user=request.user) # Obtener tarea y solo muestra las del usuario logueado
+        form = TaskForm(instance=tarea)
+        return render(request, 'task_detail.html', {
+            'tarea': tarea,
+            'form': form
+        })
+    else:
+        try:
+            tarea = get_object_or_404(Task, pk=tarea_id, user=request.user)
+            form = TaskForm(request.POST, instance=tarea) # Actualizando formulario
+            form.save()
+            return redirect('tasks')
+        except ValueError:
+            return render(request, 'task_detail.html', {
+                'tarea': tarea,
+                'form': form,
+                'error': f"Error al actualizar, valor incorrecto."
+                })
+        except Exception as e:
+            return render(request, 'task_detail.html', {
+                'tarea': tarea,
+                'form': form,
+                'error': f"Error al actualizar: {e}."
+            })
 
 def signup(request):
     # Validar si es GET para mostrar la interfaz, o si es POST para recibir datos

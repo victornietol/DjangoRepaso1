@@ -5,5 +5,18 @@
 {% block content %}
     <h1>Detalles de tarea</h1>
     <h2>{{ tarea.titulo }}</h2>
+
+    {% if error %}
+        <h3>{{ error }}</h3>
+    {% endif %}
+
+    <form action="", method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button>
+            Actualizar
+        </button>
+    </form>
     
 {% endblock %}
