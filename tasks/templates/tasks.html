@@ -3,7 +3,13 @@
 {% block title %}Tareas{% endblock %}
 
 {% block content %}
-    <h1>Pagina de tareas pendientes</h1>
+    {% if completadas %}
+        <h1>Pagina de tareas completadas</h1>
+    {% else %}
+        <h1>Pagina de tareas pendientes</h1>
+
+        <a href="/tasks_completed/">Tareas completadas</a>
+    {% endif %}
 
     <ul>
         {% for task in tasks %}

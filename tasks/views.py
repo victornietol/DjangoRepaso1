@@ -6,20 +6,23 @@ from django.db import IntegrityError
 from .forms import TaskForm
 from .models import Task
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required # Verificar que el usuario este logueado para poder acceder a ciertas rutas (es un decorador)
 
 # Create your views here.
 def home(request):
     return render(request, 'home.html')
 
+@login_required
 def tasks(request):
     tareas = Task.objects.filter(user=request.user, fecha_completada=None) # Devuelve las tareas de la BD del usuario logeado, se pueden agregar mas criterios de busqueda
     return render(request, 'tasks.html', {
         'tasks': tareas
     })
 
+@login_required
 def create_task(request):
     # Verificar que se haya iniciado sesion con un usuario
-    if 'sessionid' not in request.COOKIES: # No se inicio sesion
+    if 'sessionid' not in request.COOKIES: # No se inicio sesion, (esta condicional se omite si se coloca el decorador 'login_required', ya que realiza esta comprobacion automaticamnte, pero la dejo por motivos de practicar cosas)
         return redirect('login')
     else: # Si se inicio sesion
         if request.method == 'GET':
@@ -46,6 +49,7 @@ def create_task(request):
                     'mensaje': f"Error: {e}"
                 })
 
+@login_required
 def task_detail(request, tarea_id): # el parametro debe llamarse igual que en urls.py
     if request.method == "GET":
         tarea = get_object_or_404(Task, pk=tarea_id, user=request.user) # Obtener tarea y solo muestra las del usuario logueado
@@ -72,19 +76,29 @@ def task_detail(request, tarea_id): # el parametro debe llamarse igual que en ur
                 'form': form,
                 'error': f"Error al actualizar: {e}."
             })
-        
+
+@login_required        
 def complete_task(request, tarea_id): # el parametro debe llamarse igual que en urls.py
     tarea = get_object_or_404(Task, pk=tarea_id, user=request.user)
     if request.method == 'POST':
         tarea.fecha_completada = timezone.now()
         tarea.save()
         return redirect('tasks')
-    
+
+@login_required 
 def delete_task(request, tarea_id): # el parametro debe llamarse igual que en urls.py
     tarea = get_object_or_404(Task, pk=tarea_id, user=request.user)
     if request.method == 'POST':
         tarea.delete()
         return redirect('tasks')
+
+@login_required
+def tasks_completed(request):
+    tareas = Task.objects.filter(user=request.user, fecha_completada__isnull=False).order_by('-fecha_completada')
+    return render(request, 'tasks.html', {
+        'tasks': tareas,
+        'completadas': True
+    })
 
 def signup(request):
     # Validar si es GET para mostrar la interfaz, o si es POST para recibir datos
@@ -123,7 +137,8 @@ def signup(request):
                 'form': UserCreationForm,
                 'error': "Las contraseñas no conciden"
             })
-        
+
+@login_required
 def cerrar_sesion(request):
     logout(request)
     return redirect('home')

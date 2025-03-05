@@ -14,17 +14,25 @@
         {% csrf_token %}
         {{ form.as_p }}
 
+        <p>Usuario: {{ tarea.user }}</p>
+
+        {% if tarea.fecha_completada %}
+            <p>Fecha completada: {{ tarea.fecha_completada }}</p>
+        {% endif %}
+
         <button>
             Actualizar
         </button>
     </form>
 
-    <form action="{% url 'complete_task' tarea.id %}" method="POST">
-        {% csrf_token %}
-        <button>
-            Completar
-        </button>
-    </form>
+    {% if not tarea.fecha_completada %}
+        <form action="{% url 'complete_task' tarea.id %}" method="POST">
+            {% csrf_token %}
+            <button>
+                Completar
+            </button>
+        </form>
+    {% endif %}
 
     <form action="{% url 'delete_task' tarea.id %}" method="POST">
         {% csrf_token %}
