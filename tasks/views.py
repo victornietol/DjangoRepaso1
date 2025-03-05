@@ -5,13 +5,14 @@ from django.contrib.auth import login, logout, authenticate # Manejo de cookies 
 from django.db import IntegrityError
 from .forms import TaskForm
 from .models import Task
+from django.utils import timezone
 
 # Create your views here.
 def home(request):
     return render(request, 'home.html')
 
 def tasks(request):
-    tareas = Task.objects.filter(user=request.user) # Devuelve las tareas de la BD del usuario logeado, se pueden agregar mas criterios de busqueda
+    tareas = Task.objects.filter(user=request.user, fecha_completada=None) # Devuelve las tareas de la BD del usuario logeado, se pueden agregar mas criterios de busqueda
     return render(request, 'tasks.html', {
         'tasks': tareas
     })
@@ -45,7 +46,7 @@ def create_task(request):
                     'mensaje': f"Error: {e}"
                 })
 
-def task_detail(request, tarea_id):
+def task_detail(request, tarea_id): # el parametro debe llamarse igual que en urls.py
     if request.method == "GET":
         tarea = get_object_or_404(Task, pk=tarea_id, user=request.user) # Obtener tarea y solo muestra las del usuario logueado
         form = TaskForm(instance=tarea)
@@ -71,6 +72,19 @@ def task_detail(request, tarea_id):
                 'form': form,
                 'error': f"Error al actualizar: {e}."
             })
+        
+def complete_task(request, tarea_id): # el parametro debe llamarse igual que en urls.py
+    tarea = get_object_or_404(Task, pk=tarea_id, user=request.user)
+    if request.method == 'POST':
+        tarea.fecha_completada = timezone.now()
+        tarea.save()
+        return redirect('tasks')
+    
+def delete_task(request, tarea_id): # el parametro debe llamarse igual que en urls.py
+    tarea = get_object_or_404(Task, pk=tarea_id, user=request.user)
+    if request.method == 'POST':
+        tarea.delete()
+        return redirect('tasks')
 
 def signup(request):
     # Validar si es GET para mostrar la interfaz, o si es POST para recibir datos
