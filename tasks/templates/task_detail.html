@@ -3,42 +3,51 @@
 {% block title %}Detalles de tareas{% endblock %}
 
 {% block content %}
-    <h1>Detalles de tarea</h1>
-    <h2>{{ tarea.titulo }}</h2>
+    
+    <main class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3 mt-5">
+                <h1 class="text-center">Detalles de tarea</h1>
 
-    {% if error %}
-        <h3>{{ error }}</h3>
-    {% endif %}
+                {% if error %}
+                    <h3>{{ error }}</h3>
+                {% endif %}
 
-    <form action="", method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
 
-        <p>Usuario: {{ tarea.user }}</p>
+                    <p>Usuario: {{ tarea.user }}</p>
 
-        {% if tarea.fecha_completada %}
-            <p>Fecha completada: {{ tarea.fecha_completada }}</p>
-        {% endif %}
+                    {% if tarea.fecha_completada %}
+                        <p>Fecha completada: {{ tarea.fecha_completada }}</p>
+                    {% endif %}
 
-        <button>
-            Actualizar
-        </button>
-    </form>
+                    <button class="btn btn-primary">
+                        Actualizar
+                    </button>
+                </form>
 
-    {% if not tarea.fecha_completada %}
-        <form action="{% url 'complete_task' tarea.id %}" method="POST">
-            {% csrf_token %}
-            <button>
-                Completar
-            </button>
-        </form>
-    {% endif %}
+                <div class="mt-4 d-flex">
 
-    <form action="{% url 'delete_task' tarea.id %}" method="POST">
-        {% csrf_token %}
-        <button>
-            Eliminar
-        </button>
-    </form>
+                {% if not tarea.fecha_completada %}
+                    <form action="{% url 'complete_task' tarea.id %}" method="POST">
+                        {% csrf_token %}
+                        <button class="btn btn-success">
+                            Completar
+                        </button>
+                    </form>
+                {% endif %}
+
+                <form action="{% url 'delete_task' tarea.id %}" method="POST">
+                    {% csrf_token %}
+                    <button class="btn btn-danger">
+                        Eliminar
+                    </button>
+                </form>
+                </div>
+            </div>
+        </div>
+    </main>
     
 {% endblock %}

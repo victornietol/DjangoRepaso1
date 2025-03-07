@@ -3,19 +3,28 @@
 {% block title %}Creacion de tareas{% endblock %}
 
 {% block content %}
-    <h1>Creacion de tareas</h1>
+    
+    <main class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3 mt-5">
+                <form action="/tasks/create/" class="card card-body" method="POST">
+                    {% csrf_token %}
 
-    <form action="/tasks/create/" method="POST">
-        {% csrf_token %}
+                    <h1 class="text-center">Creacion de tareas</h1>
 
-        {% if mensaje %}
-            <h2>{{ mensaje }}</h2>
-        {% endif %}
+                    {% if mensaje %}
+                        <h2>{{ mensaje }}</h2>
+                    {% endif %}
 
-        {{ form.as_p }}
+                    {{ form.as_p }}
 
-        <button>
-            Guardar
-        </button>
-    </form>
+                    <button class="btn btn-primary">
+                        Guardar
+                    </button>
+                </form>
+                
+            </div>
+        </div>
+    </main>
+
 {% endblock %}

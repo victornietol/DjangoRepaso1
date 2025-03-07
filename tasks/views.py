@@ -101,42 +101,45 @@ def tasks_completed(request):
     })
 
 def signup(request):
-    # Validar si es GET para mostrar la interfaz, o si es POST para recibir datos
-    if request.method == 'GET':
-        return render(request, 'signup.html', {
-            'form': UserCreationForm,
-            'error': None
-        })
-    else: 
-        # Registrar al nuevo usuario
-        # Validar que las nuevas contraseñas coincidan
-        if request.POST['password1'] == request.POST['password2']:
-            # Se intenta registrar al usuario
-            try:
-                user = User.objects.create_user(
-                    username=request.POST['username'],
-                    password=request.POST['password1']
-                )
-                user.save() # Guardar el usuario en la BD
-                login(request, user) # Generar cookie de inicio de sesion con el usuario
-                return redirect("tasks")
-
-            except IntegrityError:
-                return render(request, 'signup.html', {
-                    'form': UserCreationForm,
-                    'error': "El usuario ya existe."
-                })
-            except Exception as e:
-                return render(request, 'signup.html', {
-                    'form': UserCreationForm,
-                    'error': f"{e}"
-                })
-            
-        else:
+    if 'sessionid' not in request.COOKIES: # Si esta logueado se manda al inicio
+        # Validar si es GET para mostrar la interfaz, o si es POST para recibir datos
+        if request.method == 'GET':
             return render(request, 'signup.html', {
                 'form': UserCreationForm,
-                'error': "Las contraseñas no conciden"
+                'error': None
             })
+        else: 
+            # Registrar al nuevo usuario
+            # Validar que las nuevas contraseñas coincidan
+            if request.POST['password1'] == request.POST['password2']:
+                # Se intenta registrar al usuario
+                try:
+                    user = User.objects.create_user(
+                        username=request.POST['username'],
+                        password=request.POST['password1']
+                    )
+                    user.save() # Guardar el usuario en la BD
+                    login(request, user) # Generar cookie de inicio de sesion con el usuario
+                    return redirect("tasks")
+
+                except IntegrityError:
+                    return render(request, 'signup.html', {
+                        'form': UserCreationForm,
+                        'error': "El usuario ya existe."
+                    })
+                except Exception as e:
+                    return render(request, 'signup.html', {
+                        'form': UserCreationForm,
+                        'error': f"{e}"
+                    })
+                
+            else:
+                return render(request, 'signup.html', {
+                    'form': UserCreationForm,
+                    'error': "Las contraseñas no conciden"
+                })
+    else:
+        return redirect('home')
 
 @login_required
 def cerrar_sesion(request):
@@ -144,23 +147,26 @@ def cerrar_sesion(request):
     return redirect('home')
 
 def iniciar_sesion(request):
-    if request.method == 'GET':
-        return render(request, 'login.html', {
-            'form': AuthenticationForm,
-            'error': None
-        })
-    else: 
-        # Autenticar usuario
-        user = authenticate(request,
-            username=request.POST['username'],
-            password=request.POST['password']
-        )
-        
-        if user is None: # Si no se devuelve objeto entonces no hay usuario
+    if 'sessionid' not in request.COOKIES:
+        if request.method == 'GET':
             return render(request, 'login.html', {
                 'form': AuthenticationForm,
-                'error': "El usuario o la contraseña son incorrectos."
+                'error': None
             })
-        else: #  Se inicia sesion y se genera un cookie
-            login(request, user)
-            return redirect('tasks')
+        else: 
+            # Autenticar usuario
+            user = authenticate(request,
+                username=request.POST['username'],
+                password=request.POST['password']
+            )
+            
+            if user is None: # Si no se devuelve objeto entonces no hay usuario
+                return render(request, 'login.html', {
+                    'form': AuthenticationForm,
+                    'error': "El usuario o la contraseña son incorrectos."
+                })
+            else: #  Se inicia sesion y se genera un cookie
+                login(request, user)
+                return redirect('tasks')
+    else:
+        return redirect('home')

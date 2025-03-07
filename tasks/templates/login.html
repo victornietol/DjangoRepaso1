@@ -3,18 +3,37 @@
 {% block title %}Iniciar Sesion{% endblock %}
 
 {% block content %}
-    <h1>Pagina para Iniciar Sesion</h1>
+    <main class="container">
+        <div class="row">
+            <section class="col-md-4 offset-md-4 mt-5">
+                    <form method="POST" class="card card-body">
+                        {% csrf_token %}
 
-    {% if error %}
-        <h2>Error: {{ error }}</h2>
-    {% endif %}
+                        <h1 class="text-center">Iniciar Sesion</h1>
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
+                        {% if error %}
+                            <p class="text-center text-danger">Error: {{ error }}</p>
+                        {% endif %}
 
-        <button>
-            Iniciar Sesion
-        </button>
-    </form>
+                        {# ya no se utiliza este formulario #}
+                        {# {{ form.as_p }} #}
+
+                        <div class="mb-3">
+                            <label for="username">Usuario</label>
+                            <input type="text" name="username" id="username" class="form-control" placeholder="Ingresa el usuario">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password">Contraseña</label>
+                            <input type="password" name="password" id="password" class="form-control" placeholder="Ingresa una contraseña">
+                        </div>
+
+                        <button class="btn btn-primary">
+                            Iniciar Sesion
+                        </button>
+
+                    </form>
+            </section>
+        </div>
+    </main>
 {% endblock %}

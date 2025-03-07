@@ -3,19 +3,44 @@
 {% block title %}Registrarse{% endblock %}
 
 {% block content %}
-    <h1>Pagina para Registro de Usuario</h1>
+    <main class="container">
+        <div class="row ">
+            <div class="col-md-4 offset-md-4 mt-5">
 
-    {% if error %}
-        <h2>Error: {{ error }}</h2>
-    {% endif %}
+                <form method="POST" class="card card-body">
+                    <h1 class="text-center">Registro de Usuario</h1>
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
+                    {% if error %}
+                        <p class="text-center text-danger">Error: {{ error }}</p>
+                    {% endif %}
 
-        <button>
-            Registrar
-        </button>
-    </form>
+                    {% csrf_token %}
+
+                    {# ya no se utiliza este formulario #}
+                    {# {{ form.as_p }} #}
+
+                    <div class="mb-3">
+                        <label for="username">Usuario</label>
+                        <input type="text" name="username" id="username" class="form-control" placeholder="Ingresa un nuevo usuario">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password1">Contraseña</label>
+                        <input type="password" name="password1" id="password1" class="form-control" placeholder="Ingresa una contraseña">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password2">Confirma tu contraseña</label>
+                        <input type="password" name="password2" id="password2" class="form-control" placeholder="Ingresa de nuevo tu contraseña">
+                    </div>
+
+                    <button class="btn btn-primary">
+                        Registrar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+    
 
 {% endblock %}

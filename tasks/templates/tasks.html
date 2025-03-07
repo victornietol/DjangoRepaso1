@@ -3,33 +3,43 @@
 {% block title %}Tareas{% endblock %}
 
 {% block content %}
-    {% if completadas %}
-        <h1>Pagina de tareas completadas</h1>
-    {% else %}
-        <h1>Pagina de tareas pendientes</h1>
+    
+<main class="container">
+    <div class="row">
+        <div class="col-md-10 offset-md-1 mt-5">
 
-        <a href="/tasks_completed/">Tareas completadas</a>
-    {% endif %}
+            {% if completadas %}
+                <h1 class="text-center py-5">Pagina de tareas completadas</h1>
+            {% else %}
+                <h1 class="text-center py-5">Pagina de tareas pendientes</h1>
 
-    <ul>
-        {% for task in tasks %}
-            <a href="{% url 'task_detail' task.id %}"> {# Se indica la url a visitar y el valor sig en este caso es el id de la tarea que se obtiene dinamicamente #}
-                <li>
-                    {% if task.importante %}
-                        <h2>🚨{{ task.titulo }}🚨</h2>
-                    {% else %}
-                        <h2>{{ task.titulo }}</h2>
-                    {% endif %}
+                <a class="mb-2 d-block" href="/tasks_completed/">Tareas completadas</a>
+            {% endif %}
+
+            <ul class="list-group">
+                {% for task in tasks %}
+                    <a href="{% url 'task_detail' task.id %}" class="list-group-item"> {# Se indica la url a visitar y el valor sig en este caso es el id de la tarea que se obtiene dinamicamente #}
+                        <header class="d-flex justify-content-between"> {# sirve para justificar el contenido #}
+                            {% if task.importante %}
+                                <h2 class="fw-bold text-success">🚨{{ task.titulo }}🚨</h2>
+                            {% else %}
+                                <h2 class="fw-bold">{{ task.titulo }}</h2>
+                            {% endif %}
+                            <p>Usuario: {{ task.user.username }}</p>
+                        </header>
+                        <p>Descripcion: {{ task.descripcion }}</p>
+                    </a>
+                {% endfor %}
+            </ul>
+
+            <a href="/tasks/create/">
+                <button class="btn btn-primary mt-5">
+                    Nueva Tarea
+                </button>
             </a>
-                    <p>Descripcion: {{ task.descripcion }}</p>
-                    <p>Usuario: {{ task.user.username }}</p>
-                </li>
-            
 
-        {% endfor %}
-    </ul>
+        </div>
+    </div>
+</main>
 
-    <a href="/tasks/create/">
-        <button>Nueva Tarea</button>
-    </a>
 {% endblock %}
